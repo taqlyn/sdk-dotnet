@@ -10,6 +10,12 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Taqlyn.Sdk.Tests" />
   </ItemGroup>
+  <!-- Nested test project would otherwise be compiled into the library. -->
+  <ItemGroup>
+    <Compile Remove="Taqlyn.Sdk.Tests/**" />
+    <None Remove="Taqlyn.Sdk.Tests/**" />
+    <EmbeddedResource Remove="Taqlyn.Sdk.Tests/**" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
   </ItemGroup>
