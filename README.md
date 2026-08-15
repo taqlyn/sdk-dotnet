@@ -1,5 +1,7 @@
 # Taqlyn .NET SDK
 
+**Full guide:** [.NET](../../apps/docs/content/server/dotnet.md) on the docs site. NuGet PackageId is not published yet.
+
 Server SDK for creating short links with Ed25519-signed requests. Do not use
 this package in mobile or other untrusted clients.
 
