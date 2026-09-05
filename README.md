@@ -6,15 +6,17 @@ Server SDK for creating short links with Ed25519-signed requests. Do not use
 this package in mobile or other untrusted clients.
 
 ```bash
-export TAQLYN_BASE_URL=https://api.rutvik.qzz.io
+# Optional override: defaults to https://api.taqlyn.com in production
+# export TAQLYN_BASE_URL=https://api.taqlyn.com
+
 export TAQLYN_CLIENT_ID=app_test_...
 export TAQLYN_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----...'
 dotnet test Taqlyn.Sdk.Tests/Taqlyn.Sdk.Tests.csproj
 ```
 
 ```csharp
+// Zero-config: baseUrl is optional, defaults to TAQLYN_BASE_URL env var or "https://api.taqlyn.com"
 var client = new Taqlyn.TaqlynClient(
-    Environment.GetEnvironmentVariable("TAQLYN_BASE_URL")!,
     Environment.GetEnvironmentVariable("TAQLYN_CLIENT_ID")!,
     Environment.GetEnvironmentVariable("TAQLYN_PRIVATE_KEY")!);
 

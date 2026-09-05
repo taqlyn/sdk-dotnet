@@ -13,21 +13,34 @@ public sealed class TaqlynClient
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
+    public const string DefaultApiBaseUrl = "https://api.taqlyn.com";
+
     private readonly string _baseUrl;
     private readonly string _clientId;
     private readonly Ed25519PrivateKeyParameters _key;
     private readonly HttpClient _http;
     private readonly Func<long> _now;
 
-    public TaqlynClient(string baseUrl, string clientId, string privateKeyPem, HttpClient? httpClient = null, Func<long>? now = null)
+    public TaqlynClient(string clientId, string privateKeyPem, HttpClient? httpClient = null, Func<long>? now = null)
+        : this(null, clientId, privateKeyPem, httpClient, now)
     {
-        if (string.IsNullOrWhiteSpace(baseUrl)) throw new ArgumentException("baseUrl is required");
+    }
+
+    public TaqlynClient(string? baseUrl, string clientId, string privateKeyPem, HttpClient? httpClient = null, Func<long>? now = null)
+    {
+        var rawUrl = !string.IsNullOrWhiteSpace(baseUrl)
+            ? baseUrl
+            : Environment.GetEnvironmentVariable("TAQLYN_BASE_URL")
+              ?? Environment.GetEnvironmentVariable("TAQLYN_API_URL")
+              ?? DefaultApiBaseUrl;
+
+        if (string.IsNullOrWhiteSpace(rawUrl)) throw new ArgumentException("baseUrl is required");
         if (string.IsNullOrWhiteSpace(clientId)) throw new ArgumentException("clientId is required");
         if (!clientId.StartsWith("app_test_", StringComparison.Ordinal) && !clientId.StartsWith("app_live_", StringComparison.Ordinal))
         {
             throw new ArgumentException("clientId must start with app_test_ or app_live_");
         }
-        _baseUrl = baseUrl.TrimEnd('/');
+        _baseUrl = rawUrl.TrimEnd('/');
         _clientId = clientId.Trim();
         _key = Signer.LoadPrivateKey(privateKeyPem);
         _http = httpClient ?? new HttpClient();
