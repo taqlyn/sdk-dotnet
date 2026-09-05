@@ -1,0 +1,48 @@
+name: Publish .NET SDK (NuGet)
+
+# Builds and pushes Taqlyn.Sdk package to NuGet.org.
+# Requires NUGET_API_KEY secret.
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: publish-dotnet-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Build, Test & Push NuGet Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run unit tests
+        run: dotnet test Taqlyn.Sdk.Tests/Taqlyn.Sdk.Tests.csproj --nologo
+
+      - name: Pack NuGet Package
+        run: dotnet pack -c Release -o ./dist Taqlyn.Sdk.csproj
+
+      - name: Push to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "::error::NUGET_API_KEY secret is not configured."
+            exit 1
+          fi
+          dotnet nuget push ./dist/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate

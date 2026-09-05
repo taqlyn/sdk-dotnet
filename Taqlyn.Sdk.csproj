@@ -5,8 +5,24 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Taqlyn</RootNamespace>
     <AssemblyName>Taqlyn.Sdk</AssemblyName>
+    <PackageId>Taqlyn.Sdk</PackageId>
+    <Version>0.1.0</Version>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Authors>Taqlyn</Authors>
+    <Company>Taqlyn</Company>
     <Description>Taqlyn server SDK — Ed25519-signed short-link API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://taqlyn.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/taqlyn/sdk-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>taqlyn;deep-links;shortlinks;ed25519</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="Taqlyn.Sdk.Tests" />
   </ItemGroup>
