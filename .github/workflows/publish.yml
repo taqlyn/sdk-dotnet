@@ -22,6 +22,9 @@ jobs:
   publish:
     name: Build, Test & Push NuGet Package
     runs-on: ubuntu-latest
+    environment:
+      name: nuget
+      url: https://www.nuget.org/packages/Taqlyn.Sdk
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
