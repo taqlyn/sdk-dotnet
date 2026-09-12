@@ -1,7 +1,8 @@
 name: Publish .NET SDK (NuGet)
 
-# Builds and pushes Taqlyn.Sdk package to NuGet.org.
-# Requires NUGET_API_KEY secret.
+# Pushes Taqlyn.Sdk via NuGet.org Trusted Publishing (OIDC).
+# No NUGET_API_KEY — configure Trusted Publishing on nuget.org for this repo:
+#   owner: taqlyn (NuGet org), workflow: publish.yml, environment: nuget
 
 on:
   release:
@@ -17,6 +18,7 @@ concurrency:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -40,12 +42,15 @@ jobs:
       - name: Pack NuGet Package
         run: dotnet pack -c Release -o ./dist Taqlyn.Sdk.csproj
 
+      - name: NuGet login (OIDC)
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: taqlyn
+
       - name: Push to NuGet.org
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "::error::NUGET_API_KEY secret is not configured."
-            exit 1
-          fi
-          dotnet nuget push ./dist/*.nupkg -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
+        run: >
+          dotnet nuget push ./dist/*.nupkg
+          -k "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
+          -s https://api.nuget.org/v3/index.json
+          --skip-duplicate
